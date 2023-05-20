@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>keykeys</title>
+    <link rel="stylesheet" type="text/css" href="src/style.css">
+</head>
+
+<body>
+    <script src="src/init.js"></script>
+    <script src="src/main.js"></script>
+    <div id="piano" class="piano"></div>
+    <br>
+    <div class="settings-box noselect">
+        <h1>piano</h1>
+        <hr>
+        <select id="piano-start-note" class="refresh-piano piano-select note-select">
+        </select> start note
+        <br>
+        <select id="piano-start-octave" class="refresh-piano piano-select">
+        </select> start octave
+        <br>
+        <label>
+            <input id="key-show-note-name" type="checkbox" checked>
+                show note name
+            </input>
+        </label>
+        <br>
+        <label>
+            <input id="key-show-note-number" type="checkbox" checked>
+                show note number
+            </input>
+        </label>
+        <br>
+        <input id="piano-key-count" class="refresh-piano piano-select" value="28">
+        </input> key count
+    </div>
+    <div class="settings-box noselect">
+        <h1>scale</h1>
+        <hr>
+        <select id="key-root-note" class="note-select refresh-highlight">
+        </select> root note
+        <br>
+        <select id="key-scale" class="scale-select refresh-highlight">
+        </select>
+        <br>
+        <label>
+            <input id="key-highlight" class="refresh-highlight" type="checkbox" checked>
+                highlight selected
+            </input>
+        </label>
+        <br>
+        <label>
+            <input id="key-highlight-on-hover" type="checkbox">
+                highlight on hover
+            </input>
+        </label>
+    </div>
+</body>
+
+</html>
