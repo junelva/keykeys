@@ -1,16 +1,41 @@
-// keykeys table.js
+// keykeys data.js
 
 window.keykeys = {}
 window.keykeys.data = {
+    "last_note_name": "A2",
     "note_names": ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"],
+    "scale_degrees": ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th"],
+    "chord_roman_numerals": ["I", "II", "III", "IV", "V", "VI", "VII"],
+    "scale_interval_names": [
+        ["perfect unison", "perfect octave", "diminished second"],
+        ["minor second", "augmented unison"],         // 1 semitone
+        ["major second", "diminished third"],         // 2
+        ["minor third", "augmented second"],          // 3
+        ["major third", "diminished fourth"],         // 4
+        ["perfect fourth", "augmented third"],        // 5
+        ["diminished fifth", "augmented fourth"],     // 6
+        ["perfect fifth", "diminished sixth"],        // 7
+        ["minor sixth", "augmented fifth"],           // 8
+        ["major sixth", "diminished seventh"],        // 9
+        ["minor seventh", "augmented sixth"],         // 10
+        ["major seventh", "diminished octave"],       // 11
+    ],
     "scale_intervals": {
+        "Major": [0,2,4,5,7,9,11],
+
+        "Natural Minor": [0,2,3,5,7,8,10],
+        "Melodic Minor (Asc.)": [0,2,3,5,7,9,11],
+        "Melodic Minor (Desc.)": [0,2,3,5,7,8,10],
+        "Harmonic Minor": [0,2,3,5,7,8,11],
+    },
+    "scale_intervals_extra": {
         "Hirajoshi": [0,4,6,7,11],
         "In": [0,1,5,7,8],
         "Insen": [0,1,5,7,10],
         "Iwato": [0,1,5,6,10],        
         "Yo": [0,3,5,7,10],
-        
-        "Major (Ionian)": [0,2,4,5,7,9,11],
+        "Ritsu": [0,2,5,7,9],
+
         "Major Pentatonic": [0,2,4,7,9],
         "Harmonic Major": [0,2,4,5,7,8,11],
         
@@ -25,11 +50,7 @@ window.keykeys.data = {
         
         "Mixolydian": [0,2,4,5,7,9,10],
         
-        "Natural Minor (Aeolian)": [0,2,3,5,7,8,10],
-        "Melodic Minor (Asc.)": [0,2,3,5,7,9,11],
-        "Melodic Minor (Desc.)": [0,2,3,5,7,8,10],
         "Minor Pentatonic": [0,3,5,7,10],
-        "Harmonic Minor": [0,2,3,5,7,8,11],
         
         "Locrian": [0,1,3,5,6,8,10],
         "Locrian Major": [0,2,4,5,6,8,10],
@@ -93,22 +114,15 @@ function setInputFilter(textbox, inputFilter, errMsg) {
     });
 }
 
-window.keykeys.fun.refreshHighlight = function() {
-    window.keykeys.fun.clearHighlights();
-    let highlight_enabled = document.getElementById("key-highlight").checked;
-    if (highlight_enabled) {
-        let selected_scale = document.getElementById("key-scale").value;
-        window.keykeys.fun.highlightNotesInScale(selected_scale);
-    }
-}
 
 window.keykeys.fun.createSettingsCallbacks = function() {    
-    // restrict key count to integers only
+    // restrict piano key count to integers only
     setInputFilter(document.getElementById("piano-key-count"), function(value) {
         return /^\d*$/.test(value);
       }, "Only integer values are allowed."
     );
     
+    // refresh piano when piano settings are changed
     [...document.getElementsByClassName("refresh-piano")].forEach(
         function(element) {
             element.addEventListener("change", function() {
@@ -118,6 +132,7 @@ window.keykeys.fun.createSettingsCallbacks = function() {
         }
     );
     
+    // refresh highlight when scale settings are changed
     [...document.getElementsByClassName("refresh-highlight")].forEach(
         function(element) {
             element.addEventListener("change", function() {
@@ -224,6 +239,7 @@ window.keykeys.fun.createPiano = function(root_note, root_octave, num_notes) {
             break;
         }
         let note_name = window.keykeys.data.table_piano[i]["name"];
+        let note_name_letter_only = note_name.replace(/[0-9]/g, '');
 
         let piano_key_div = document.createElement("div");
         let is_natural = note_name.indexOf("#") == -1;
@@ -242,12 +258,29 @@ window.keykeys.fun.createPiano = function(root_note, root_octave, num_notes) {
             piano_key_div.style.left = natural_display_index * natural_width - (sharp_width * 0.5) + "%";
             piano_key_div.classList.add("key", "sharp");
         }
-        piano_key_div.classList.add(note_name.replace(/[0-9]/g, ''));
+        piano_key_div.classList.add(note_name_letter_only);
 
         // add empty div of class 'key-gradient' to each piano key div
         let piano_key_gradient_div = document.createElement("div");
         piano_key_gradient_div.classList.add("key-gradient");
         piano_key_div.appendChild(piano_key_gradient_div);
+
+        // if key-pick-on-hover is checked, set the root note to the hovered note
+        piano_key_div.addEventListener("mouseover", function() {
+            // get the note name of the hovered key
+            let key_pick_on_hover = document.getElementById("key-pick-on-hover").checked;
+            if (key_pick_on_hover) {
+                let root_note_input = document.getElementById("key-root-note");
+                root_note_input.value = note_name_letter_only;
+                root_note_input.dispatchEvent(new Event("change"));
+            }
+        });
+
+        // update note details when clicking on a key.
+        piano_key_div.addEventListener("click", function() {
+            window.keykeys.data.last_note_name = note_name;
+            window.keykeys.fun.updateNoteDetails(note_name);
+        });
 
         piano_div.appendChild(piano_key_div);
     }
@@ -330,79 +363,9 @@ window.keykeys.fun.generateDataTables = function(midi_start, midi_end) {
     window.keykeys.data.table_freq = table_freq;
 }
 
-
 window.keykeys.fun.getNoteAtInterval = function(note_name, interval) {
     let note_names = window.keykeys.data.note_names;
     let note_name_index = note_names.indexOf(note_name);
     let note_name_index_plus_interval = (note_name_index + interval) % 12;
     return note_names[note_name_index_plus_interval];
-}
-
-window.keykeys.fun.clearHighlights = function() {
-    // clear in-scale class from all keys with that class
-    let in_scale_keys = document.getElementsByClassName("key");
-    for (let in_scale_key of in_scale_keys) {
-        in_scale_key.classList.remove(
-            "in-scale",
-            "interval",
-            "interval-1",
-            "interval-2",
-            "interval-3",
-            "interval-4",
-            "interval-5",
-            "interval-6",
-            "interval-7",
-            "interval-8",
-            "interval-9",
-            "interval-10",
-            "interval-11"
-        );
-    }
-}
-
-window.keykeys.fun.highlightNotesInScale = function(scale_name) {
-    // get the scale root note and intervals
-    let scale_root_note = document.getElementById("key-root-note").value;
-    let scale_intervals = window.keykeys.data.scale_intervals[scale_name];
-    let scale_notes = [];
-
-    // get the note names for notes in this scale with scale root note
-    for (let scale_interval of scale_intervals) {
-        scale_notes.push(window.keykeys.fun.getNoteAtInterval(scale_root_note, scale_interval));
-    }
-
-    // highlight keys with the class of the note names
-    let count = 1;
-    for (let scale_note of scale_notes) {
-        let highlight_class = "interval";
-        if (count == 1) {
-            highlight_class = "interval-1";
-        } else if (count == 2) {
-            highlight_class = "interval-2";
-        } else if (count == 3) {
-            highlight_class = "interval-3";
-        } else if (count == 4) {
-            highlight_class = "interval-4";
-        } else if (count == 5) {
-            highlight_class = "interval-5";
-        } else if (count == 6) {
-            highlight_class = "interval-6";
-        } else if (count == 7) {
-            highlight_class = "interval-7";
-        } else if (count == 8) {
-            highlight_class = "interval-8";
-        } else if (count == 9) {
-            highlight_class = "interval-9";
-        } else if (count == 10) {
-            highlight_class = "interval-10";
-        } else if (count == 11) {
-            highlight_class = "interval-11";
-        }
-        
-        let scale_note_key_elements = document.getElementsByClassName(scale_note);
-        for (let element of scale_note_key_elements) {
-            element.classList.add("in-scale", highlight_class);
-        }
-        count++;
-    }
 }

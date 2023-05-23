@@ -8,54 +8,121 @@
 </head>
 
 <body>
-    <script src="src/init.js"></script>
+    <script src="src/data.js"></script>
+    <script src="src/function.js"></script>
     <script src="src/main.js"></script>
-    <div id="piano" class="piano"></div>
-    <br>
-    <div class="settings-box noselect">
-        <h1>piano</h1>
-        <hr>
-        <select id="piano-start-note" class="refresh-piano piano-select note-select">
-        </select> start note
-        <br>
-        <select id="piano-start-octave" class="refresh-piano piano-select">
-        </select> start octave
-        <br>
-        <label>
-            <input id="key-show-note-name" type="checkbox" checked>
-                show note name
-            </input>
-        </label>
-        <br>
-        <label>
-            <input id="key-show-note-number" type="checkbox" checked>
-                show note number
-            </input>
-        </label>
-        <br>
-        <input id="piano-key-count" class="refresh-piano piano-select" value="28">
-        </input> key count
+    <div id="header" class="widget-row">
+        <button id="header-button-about" class="header-button">about</button>
+        | keykeys | learn keys with keys
     </div>
-    <div class="settings-box noselect">
-        <h1>scale</h1>
-        <hr>
-        <select id="key-root-note" class="note-select refresh-highlight">
-        </select> root note
-        <br>
-        <select id="key-scale" class="scale-select refresh-highlight">
-        </select>
-        <br>
-        <label>
-            <input id="key-highlight" class="refresh-highlight" type="checkbox" checked>
-                highlight selected
-            </input>
-        </label>
-        <br>
-        <label>
-            <input id="key-highlight-on-hover" type="checkbox">
-                highlight on hover
-            </input>
-        </label>
+    <hr>
+    <div id="piano" class="piano"></div>
+    <hr>
+    <div class="widget-row">
+        <div class="details box">
+            <h1>note details</h1>
+            <hr>
+            <span id="note-name">A2</span>,
+            key <span id="note-number">25</span> on a piano.
+            <span id="note-frequency">110.00</span> Hz,
+            midi note <span id="note-midi">45</span>.
+            <br><br>
+            <span id="note-semitone-distance">0</span> semitones from <span id="note-root">A</span>,
+            it's <span id="note-in-scale">the 1st degree of A Major</span>.
+            <br><br>
+            it's called the
+            <span id="note-interval-names">perfect unison, perfect octave, diminished second</span>.
+        </div>
+        <div class="details box">
+            <h1>basic chords in scale</h1>
+            <hr>
+            <table id="chord-table" style="width: 100%">
+                <tr>
+                    <td id="chord-1">I</td>
+                    <td id="chord-1-name">A Major</td>
+                    <td id="chord-1-play" class="chord-play">play</td>
+                </tr>
+                <tr>
+                    <td id="chord-2">ii</td>
+                    <td id="chord-2-name">B Minor</td>
+                    <td id="chord-2-play" class="chord-play">play</td>
+                </tr>
+                <tr>
+                    <td id="chord-3">iii</td>
+                    <td id="chord-3-name">C# Minor</td>
+                    <td id="chord-3-play" class="chord-play">play</td>
+                </tr>
+                <tr>
+                    <td id="chord-4">IV</td>
+                    <td id="chord-4-name">D Major</td>
+                    <td id="chord-4-play" class="chord-play">play</td>
+                </tr>
+                <tr>
+                    <td id="chord-5">V</td>
+                    <td id="chord-5-name">E Major</td>
+                    <td id="chord-5-play" class="chord-play">play</td>
+                </tr>
+                <tr>
+                    <td id="chord-6">vi</td>
+                    <td id="chord-6-name">F# Minor</td>
+                    <td id="chord-6-play" class="chord-play">play</td>
+                </tr>
+                <tr>
+                    <td id="chord-7">vii°</td>
+                    <td id="chord-7-name">G# Dim.</td>
+                    <td id="chord-7-play" class="chord-play">play</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <hr>
+    <div class="widget-row">
+        <div class="settings box noselect">
+            <h1>piano</h1>
+            <hr>
+            <select id="piano-start-note" class="refresh-piano piano-select note-select">
+            </select> start note
+            <br>
+            <select id="piano-start-octave" class="refresh-piano piano-select">
+            </select> start octave
+            <br>
+            <label>
+                <input id="key-show-note-name" type="checkbox" checked>
+                    show note name
+                </input>
+            </label>
+            <br>
+            <label>
+                <input id="key-show-note-number" type="checkbox" checked>
+                    show note number
+                </input>
+            </label>
+            <br>
+            <input id="piano-key-count" class="refresh-piano piano-select" value="28">
+            </input> key count
+        </div>
+        <div class="settings box noselect">
+            <h1>scale</h1>
+            <hr>
+            <select id="key-root-note" class="note-select refresh-highlight">
+            </select> root note
+            <br>
+            <label>
+                <input id="key-pick-on-hover" type="checkbox" checked>
+                    pick on hover
+                </input>
+            </label>
+            <br>
+            <select id="key-scale" class="scale-select refresh-highlight">
+            </select>
+            <br>
+            <label>
+                <input id="key-highlight" class="refresh-highlight" type="checkbox" checked>
+                    highlight selected
+                </input>
+            </label>
+            <br>
+        </div>
     </div>
 </body>
 

@@ -1,6 +1,7 @@
 /* simple dark theme for body */
 body {
-    background-color: #000;
+    background-color: #181818;
+    background-image: url("../img/ducklings.png");
     color: #c0c0c0;
     overflow: hidden;
     font-family: sans-serif;
@@ -25,6 +26,19 @@ input:checked {
 	background: #bada55;
 }
 
+#header {
+    padding: 0.4em;
+    padding-bottom: 0;
+}
+
+#header button {
+    padding: 0.1em;
+    margin: 0;
+    margin-right: 0.4em;
+    height: 100%;
+    width: 6em;
+}
+
 h1 {
     padding: 0;
     margin: 0;
@@ -33,20 +47,56 @@ h1 {
 }
 
 hr {
-    margin: 0.25em;
-    border: 2px solid black;
+    margin: 0.75em;
+    border: 2px dotted black;
     background: #515151;
+}
+
+.flex-row {
+    display: flex;
+}
+
+.flex-col {
+    flex: 1;
 }
 
 .piano-select {
     width: 40px;
 }
 
-.settings-box {
-    float: left;
+.widget-row {
+    display: flex;
+    width: 100%;
+    background: #1d1d1d;
+}
+
+.details {
+    width: 12em;
+    height: 15em;
+}
+
+.details table {
+    border-spacing: 0;
+    height: 75%
+}
+
+.details table tr td {
+    text-align: center;
+    border-right: 2px solid #4b4b4b;
+}
+
+.details table tr td:last-child {
+    border: 0;
+}
+
+.settings {
     width: 180px;
     background: #212121;
-    padding: 5px;
+}
+
+.box {
+    float: left;
+    padding: 0.5em;
     margin: 5px;
     border: 1px solid #6f6f6f;
     border-radius: 5px;
@@ -56,6 +106,7 @@ hr {
     width: 100%;
     height: 166px;
     background-color: #000;
+    margin-bottom: 1em;
 }
 
 .key {
@@ -101,7 +152,7 @@ hr {
 
 /* hover effect for keys */
 .key:hover {
-    background-color: #6fd2dd;
+    background-color: #f18f3a;
 }
 
 .natural {
@@ -131,19 +182,19 @@ hr {
 }
 
 .interval-2 {
-    background-color: #bc7d5d;
+    background-color: #bc5d5d;
 }
 
 .interval-3 {
-    background-color: #c2ad43;
+    background-color: #b5a246;
 }
 
 .interval-4 {
-    background-color: #6d8164;
+    background-color: #748a4a;
 }
 
 .interval-5 {
-    background-color: #50a4b1;
+    background-color: #579ba6;
 }
 
 .interval-6 {
