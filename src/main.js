@@ -8,3 +8,4 @@ window.onload = function () {
     window.keykeys.fun.createSettingsCallbacks();
     window.keykeys.fun.refreshHighlight();
 }
+

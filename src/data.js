@@ -22,14 +22,15 @@ window.keykeys.data = {
     ],
     "scale_intervals": {
         "Major": [0,2,4,5,7,9,11],
-
-        "Natural Minor": [0,2,3,5,7,8,10],
+        "Minor": [0,2,3,5,7,8,10],
+        "Double Harmonic": [0,1,4,5,7,8,11],
+    },
+    "scale_intervals_extra": {
         "Melodic Minor (Asc.)": [0,2,3,5,7,9,11],
         "Melodic Minor (Desc.)": [0,2,3,5,7,8,10],
         "Harmonic Minor": [0,2,3,5,7,8,11],
-    },
-    "scale_intervals_extra": {
-        "Hirajoshi": [0,4,6,7,11],
+	
+	"Hirajoshi": [0,4,6,7,11],
         "In": [0,1,5,7,8],
         "Insen": [0,1,5,7,10],
         "Iwato": [0,1,5,6,10],        
@@ -114,6 +115,12 @@ function setInputFilter(textbox, inputFilter, errMsg) {
     });
 }
 
+window.keykeys.fun.refreshScaleNoteNames = function() {
+    let root_note = document.getElementById("key-root-note").value;
+    let selected_scale = document.getElementById("key-scale").value;
+    let scale_notes = window.keykeys.fun.getScaleNotes(root_note, window.keykeys.data.scale_intervals[selected_scale]);
+    window.keykeys.data.scale_note_names = scale_notes;
+}
 
 window.keykeys.fun.createSettingsCallbacks = function() {    
     // restrict piano key count to integers only
@@ -261,9 +268,9 @@ window.keykeys.fun.createPiano = function(root_note, root_octave, num_notes) {
         piano_key_div.classList.add(note_name_letter_only);
 
         // add empty div of class 'key-gradient' to each piano key div
-        let piano_key_gradient_div = document.createElement("div");
-        piano_key_gradient_div.classList.add("key-gradient");
-        piano_key_div.appendChild(piano_key_gradient_div);
+        // let piano_key_gradient_div = document.createElement("div");
+        // piano_key_gradient_div.classList.add("key-gradient");
+        // piano_key_div.appendChild(piano_key_gradient_div);
 
         // if key-pick-on-hover is checked, set the root note to the hovered note
         piano_key_div.addEventListener("mouseover", function() {
@@ -361,11 +368,4 @@ window.keykeys.fun.generateDataTables = function(midi_start, midi_end) {
     window.keykeys.data.table_piano = table_piano;
     window.keykeys.data.table_name = table_name;
     window.keykeys.data.table_freq = table_freq;
-}
-
-window.keykeys.fun.getNoteAtInterval = function(note_name, interval) {
-    let note_names = window.keykeys.data.note_names;
-    let note_name_index = note_names.indexOf(note_name);
-    let note_name_index_plus_interval = (note_name_index + interval) % 12;
-    return note_names[note_name_index_plus_interval];
 }

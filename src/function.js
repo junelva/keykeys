@@ -1,6 +1,8 @@
 // keykeys table.js
 
 window.keykeys.fun.refreshHighlight = function() {
+    window.keykeys.fun.refreshScaleNoteNames();
+
     window.keykeys.fun.clearHighlights();
     let highlight_enabled = document.getElementById("key-highlight").checked;
     if (highlight_enabled) {
@@ -11,11 +13,70 @@ window.keykeys.fun.refreshHighlight = function() {
     window.keykeys.fun.updateChordDetails();
 }
 
+window.keykeys.fun.getNoteAtInterval = function(note_name, interval) {
+    // let selected_scale = document.getElementById("key-scale").value;
+    // let selected_scale_length = window.keykeys.data.scale_intervals[selected_scale].length;
+
+    let note_names = window.keykeys.data.note_names;
+    let note_name_index = note_names.indexOf(note_name);
+    let note_name_index_plus_interval = (note_name_index + interval) % 12;
+
+    return note_names[note_name_index_plus_interval];
+}
+
+// get the names of the notes in the scale described by the root note and intervals (from root)
+// each note_letter should be accounted for in the result, without repeating letters.
+// the next note should be the next letter, but flat or sharp if necessary.
+// for example, root note may be "A," "A#", "B", "C", etc - and
+// the intervals may be, for example, [0,2,4,5,7,9,11], or [0,2,3,5,7,8,10].
+window.keykeys.fun.getScaleNotes = function(root_note, intervals) {
+    const all_notes = window.keykeys.data.note_names;
+    
+    if (all_notes.indexOf(root_note) === -1) {
+        console.log("getScaleNotes: invalid root note", root_note);
+    }
+
+    let scale_notes = [];
+    for (let interval of intervals) {
+        scale_notes.push(window.keykeys.fun.getNoteAtInterval(root_note, interval));
+    }
+
+    let note_letters = ["A", "B", "C", "D", "E", "F", "G"];
+
+    let previous_note = ".";
+    for (let i = 0; i < scale_notes.length; i++) {
+        let note = scale_notes[i];
+        let letter_index = note_letters.indexOf(note[0]);
+        if (note[0] === previous_note[0]) {
+            scale_notes[i] = note_letters[(letter_index + 1) % note_letters.length] + "b";
+        }
+        previous_note = scale_notes[i];
+    }
+
+    // perform post-processing to fix the root note of the scale; e.g. "A#" -> "Bb"
+    let root_note_index = note_letters.indexOf(root_note[0]);
+    if (root_note[0] === scale_notes[scale_notes.length - 1][0]) {
+        scale_notes[0] = note_letters[(root_note_index + 1) % note_letters.length] + "b";
+    }
+    
+    previous_note = ".";
+    for (let i = 0; i < scale_notes.length; i++) {
+        let note = scale_notes[i];
+        let letter_index = note_letters.indexOf(note[0]);
+        if (note[0] === previous_note[0]) {
+            scale_notes[i] = note_letters[(letter_index + 1) % note_letters.length] + "b";
+        }
+        previous_note = scale_notes[i];
+    }
+
+    return scale_notes;
+}
+
 // given a scale name and a degree,
 // return the roman numeral, e.g. "I", "II", "iii", "vii°", etc,
 // and the chord type, e.g. "major", "minor", "diminished", etc,
-// and the chord notes, e.g. "C", "E", "G", etc, and return as an array
-window.keykeys.fun.determineChordAtDegree = function(root_note, scale_name, degree) {
+// and the chord notes, e.g. "C", "E", "G", etc, and return as an object
+window.keykeys.fun.determineChordAtDegree = function(scale_name, degree) {
     let scale_intervals = window.keykeys.data.scale_intervals[scale_name];
     let chord_root_interval = scale_intervals[degree - 1];
     let chord_intervals = [chord_root_interval];
@@ -59,24 +120,33 @@ window.keykeys.fun.determineChordAtDegree = function(root_note, scale_name, degr
         chord_details["chord_type"] = "dim.";
     }
 
-    // determine the chord notes based on the root note and the chord intervals
-    for (let chord_interval of chord_intervals) {
-        chord_details["chord_notes"].push(window.keykeys.fun.getNoteAtInterval(
-            root_note, chord_interval)
-        );
+    // determine the chord note names based on scale_note_names and whether
+    // the note is the root note, second note, or third note of the chord
+    // bear in mind that unlike note_names, which includes all 12 semitones,
+    // scale_note_names only contains as many notes as there are intervals in the scale
+    let scale_note_names = window.keykeys.data.scale_note_names;
+    for (let chord_degree of [0, 2, 4]) {
+        let scale_note_index = (degree - 1 + chord_degree) % scale_note_names.length;
+        chord_details["chord_notes"].push(scale_note_names[scale_note_index]);
     }
+    
+    // for (let chord_interval of chord_intervals) {
+    //     chord_details["chord_notes"].push(window.keykeys.fun.getNoteAtInterval(
+    //         root_note, chord_interval)
+    //     );
+    // }
 
     return chord_details;
 }
 
 // update the chord details based on the selected scale
 window.keykeys.fun.updateChordDetails = function() {
-    let root_note = document.getElementById("key-root-note").value;
+    // let root_note = document.getElementById("key-root-note").value;
     let selected_scale = document.getElementById("key-scale").value;
-
+    
     let chords_details_in_scale = [];
     for (let degree = 1; degree <= 7; degree++) {
-        chords_details_in_scale.push(window.keykeys.fun.determineChordAtDegree(root_note, selected_scale, degree));
+        chords_details_in_scale.push(window.keykeys.fun.determineChordAtDegree(selected_scale, degree));
     }
 
     for (let chord_details of chords_details_in_scale) {
@@ -118,12 +188,12 @@ window.keykeys.fun.updateNoteDetails = function(note_name) {
     document.getElementById("note-root").innerHTML = root_note;
 
     if (note_in_scale_degree > 0) {
-        document.getElementById("note-in-scale").innerHTML = "the " + note_in_scale_degree_name + " degree of " + root_note + " " + selected_scale;
+        document.getElementById("note-in-scale").innerHTML = note_in_scale_degree_name + " degree of " + root_note + " " + selected_scale;
     } else {
         document.getElementById("note-in-scale").innerHTML = "not in " + root_note + " " + selected_scale;
     }
 
-    document.getElementById("note-interval-names").innerHTML = note_interval_names.join(", ");
+    document.getElementById("note-interval-names").innerHTML = note_interval_names.join("<br>- ");
 }
 
 window.keykeys.fun.clearHighlights = function() {
@@ -162,30 +232,7 @@ window.keykeys.fun.highlightNotesInScale = function(scale_name) {
     // highlight keys with the class of the note names
     let count = 1;
     for (let scale_note of scale_notes) {
-        let highlight_class = "interval";
-        if (count == 1) {
-            highlight_class = "interval-1";
-        } else if (count == 2) {
-            highlight_class = "interval-2";
-        } else if (count == 3) {
-            highlight_class = "interval-3";
-        } else if (count == 4) {
-            highlight_class = "interval-4";
-        } else if (count == 5) {
-            highlight_class = "interval-5";
-        } else if (count == 6) {
-            highlight_class = "interval-6";
-        } else if (count == 7) {
-            highlight_class = "interval-7";
-        } else if (count == 8) {
-            highlight_class = "interval-8";
-        } else if (count == 9) {
-            highlight_class = "interval-9";
-        } else if (count == 10) {
-            highlight_class = "interval-10";
-        } else if (count == 11) {
-            highlight_class = "interval-11";
-        }
+        let highlight_class = "interval-" + count.toString();
         
         let scale_note_key_elements = document.getElementsByClassName(scale_note);
         for (let element of scale_note_key_elements) {

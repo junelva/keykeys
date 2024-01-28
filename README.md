@@ -1,6 +1,14 @@
 # keykeys
 
-learn keys with keys
+![keykeys screenshot](./img/screenshot.png)
+
+An older project of mine, this is a web-based interactive piano-based music theory study tool created with a few coding principles in mind: serverless, no dependencies, data-driven, using procedural C-esque JavaScript, respecting browser scope and rendering complexity. In the end I think it's a useful beginner's study guide for basic scales and chords on piano.
+
+## running
+
+You can locally host the files however you want. I use `python -m http.server` and visit `localhost:8000` in firefox. This loads `index.html` and runs client-side JavaScript to create the application.
+
+# original design doc/todo
 
 ## todo
 
@@ -81,8 +89,6 @@ In the lower left corner of the page, there is a small dancing duck. When clicke
 Trial evaluation must be activated every time the user accesses the free version. In this mode, the duck unlocks the full premium feature set.
 
 The duck itself is kind of minigame meant to provide a neutral companion in the student's studies, and it will dance as the student plays notes. Polishing this feature may include adding the ability to feed the duck, unlock various ponds, and hatch ducklings.
-
-One of the premium features is to hide the duck into an icon on the header bar, reducing distractions.
 
 If lesson plans are implemented, progression along a track of guided tutorials may benefit from unlocking rewards for the duck companion minigame.
 
